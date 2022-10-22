@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
     /**
-     * @return Collection
+     * @param Request $request
+     *
+     * @return bool|string
      */
-    public function showArticles(): Collection
+    public function showArticles(Request $request): bool|string
     {
-        return Article::all();
+        $keyword = $request->get('keyword');
+
+        $articles = $keyword === null ? Article::all()->toArray() : Article::showFilteredData($keyword);
+
+        return json_encode($articles);
     }
 }
