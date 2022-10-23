@@ -27,15 +27,15 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'me'
 ], static function () {
-    Route::get('/articles', [ArticleController::class, 'showArticlesByUser']);
-    Route::post('/articles', [ArticleController::class, 'createArticle']);
-    Route::put('/articles/{id}', [ArticleController::class, 'editArticle']);
-    Route::put('/articles', [ArticleController::class, 'voteForArticle']);
-    Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
+    Route::get('/articles', [ArticleController::class, 'getByUser']);
+    Route::post('/articles', [ArticleController::class, 'create']);
+    Route::put('/articles/{id}', [ArticleController::class, 'edit']);
+    Route::put('/articles', [ArticleController::class, 'vote']);
+    Route::delete('/articles/{id}', [ArticleController::class, 'delete']);
 });
 
 /**
  * Endpoints for guests
  */
-Route::get('/articles', [ArticleController::class, 'showArticles']);
-Route::get('/categories', [CategoryController::class, 'getTopCategories']);
+Route::get('/articles', [ArticleController::class, 'show']);
+Route::get('/categories', [CategoryController::class, 'getTop']);

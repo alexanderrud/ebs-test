@@ -20,6 +20,10 @@
 `docker exec -it php-fpm php artisan jwt:secret`
 
 ### Step 5
+#### Run migrations:
+`docker exec -it php-fpm php artisan migrate`
+
+### Step 6
 ##### Inside docker container php-fpm run seeds:
 `docker exec -it php-fpm php artisan db:seed`
 
@@ -27,6 +31,7 @@
 #### Inside project you can find postman collection file (EBS Test.postman_collection.json).
 #### Please import it into your Postman app to test the endpoints.
 #### After importing make sure that all environment variables are used and please generate jwt token by running login request.
+#### If you receive an error after request running, it may happen in case of old jwt token. Please change Bearer Token with fresh one.  
 
 ### PS
 #### I wanna thank the EBS Integrator team for giving me the opportunity to express myself. It was interesting task :)

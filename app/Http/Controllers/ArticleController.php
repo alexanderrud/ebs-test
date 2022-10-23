@@ -6,6 +6,7 @@ use App\Models\Article;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 
 class ArticleController extends Controller
 {
@@ -14,9 +15,9 @@ class ArticleController extends Controller
      *
      * @return bool|string
      */
-    public function showArticles(Request $request): bool|string
+    public function show(Request $request): bool|string
     {
-        $articles = [];
+        $articles = Article::all();
 
         if ($request->has('keyword')) {
             $articles = Article::getByKeyword($request->get('keyword'));
@@ -30,11 +31,15 @@ class ArticleController extends Controller
     }
 
     /**
-     * @return false|string
+     * @return bool|string
      */
-    public function showArticlesByUser(): bool|string
+    public function getByUser(): bool|string
     {
-        $user = auth()->userOrFail();
+        try {
+            $user = auth()->userOrFail();
+        } catch (UserNotDefinedException $exception) {
+            return response()->json(['error' => $exception->getMessage(), 'status' => $exception->getCode()]);
+        }
 
         $articles = $user->articles;
 
@@ -46,8 +51,14 @@ class ArticleController extends Controller
      *
      * @return bool|string
      */
-    public function createArticle(Request $request): bool|string
+    public function create(Request $request): bool|string
     {
+        try {
+            auth()->userOrFail();
+        } catch (UserNotDefinedException $exception) {
+            return response()->json(['error' => $exception->getMessage(), 'status' => $exception->getCode()]);
+        }
+
         $articleData = $request->post();
 
         $validator = Validator::make($articleData, [
@@ -57,15 +68,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Not all arguments are provided']);
+            return response()->json(['error' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
-            Article::addArticle($articleData);
+            Article::add($articleData);
 
             return response()->json(['message' => 'success', 'status' => 200]);
         } catch (Exception $exception) {
-            return response()->json(['message' => $exception->getMessage(), 'status' => 500]);
+            return response()->json(['error' => $exception->getMessage(), 'status' => 500]);
         }
     }
 
@@ -75,7 +86,7 @@ class ArticleController extends Controller
      *
      * @return bool|string
      */
-    public function editArticle(Request $request, int $articleId): bool|string
+    public function edit(Request $request, int $articleId): bool|string
     {
         $articleData = $request->all();
 
@@ -86,15 +97,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Not all arguments are provided', 'status' => 500]);
+            return response()->json(['error' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
-            Article::editArticle($articleId, $articleData);
+            Article::edit($articleId, $articleData);
 
             return response()->json(['message' => 'success', 'status' => 200]);
         } catch (Exception $exception) {
-            return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
+            return response()->json(['error' => $exception->getMessage(), 'status' => $exception->getCode()]);
         }
     }
 
@@ -103,7 +114,7 @@ class ArticleController extends Controller
      *
      * @return bool|string
      */
-    public function voteForArticle(Request $request): bool|string
+    public function vote(Request $request): bool|string
     {
         $voteData = $request->all();
 
@@ -113,15 +124,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Not all arguments are provided', 'status' => 500]);
+            return response()->json(['error' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
-            Article::voteForArticle($voteData);
+            Article::vote($voteData);
 
             return response()->json(['message' => 'success', 'status' => 200]);
         } catch (Exception $exception) {
-            return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
+            return response()->json(['error' => $exception->getMessage(), 'status' => $exception->getCode()]);
         }
     }
 
@@ -130,7 +141,7 @@ class ArticleController extends Controller
      *
      * @return string
      */
-    public function deleteArticle(int $articleId): string
+    public function delete(int $articleId): string
     {
         $user = auth()->userOrFail();
 
@@ -142,6 +153,6 @@ class ArticleController extends Controller
             return response()->json(['message' => 'success', 'status' => 200]);
         }
 
-        return response()->json(['message' => 'article with provided id not found', 'status' => 404]);
+        return response()->json(['error' => 'article with provided id not found', 'status' => 404]);
     }
 }

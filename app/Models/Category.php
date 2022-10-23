@@ -28,7 +28,7 @@ class Category extends Model
     /**
      * @return array
      */
-    public static function getTopCategories(): array
+    public static function getTop(): array
     {
         return DB::table('categories')
             ->join('articles', 'categories.id', '=', 'articles.category_id')

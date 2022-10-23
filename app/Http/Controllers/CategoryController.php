@@ -9,10 +9,10 @@ class CategoryController extends Controller
     /**
      * @return bool|string
      */
-    public function getTopCategories(): bool|string
+    public function getTop(): bool|string
     {
-        $topCategories = Category::getTopCategories();
+        $topCategories = Category::getTop();
 
-        return json_encode(['data' => $topCategories, 'status' => 200]);
+        return response()->json(['data' => $topCategories, 'status' => 200]);
     }
 }

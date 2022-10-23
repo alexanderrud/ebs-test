@@ -71,7 +71,7 @@ class Article extends Model
      *
      * @return void
      */
-    public static function addArticle(array $articleData): void
+    public static function add(array $articleData): void
     {
         $article = new self();
 
@@ -90,7 +90,7 @@ class Article extends Model
      *
      * @return bool
      */
-    public static function editArticle(int $articleId, array $articleData): bool
+    public static function edit(int $articleId, array $articleData): bool
     {
         $article = self::find($articleId);
 
@@ -112,7 +112,7 @@ class Article extends Model
      *
      * @return bool
      */
-    public static function voteForArticle(array $voteData): bool
+    public static function vote(array $voteData): bool
     {
         $article = self::find($voteData['article_id']);
 
