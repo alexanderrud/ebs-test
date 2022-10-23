@@ -32,7 +32,7 @@ class Category extends Model
     {
         return DB::table('categories')
             ->join('articles', 'categories.id', '=', 'articles.category_id')
-            ->select('categories.name', DB::raw('count(articles.id)'))
+            ->select('categories.name', DB::raw('count(articles.id) AS articles_count'))
             ->groupBy('categories.id')
             ->orderByRaw('sum(articles.rating) DESC')
             ->havingRaw('count(articles.id) >= 2')

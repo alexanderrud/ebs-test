@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,19 +26,19 @@ class ArticleController extends Controller
             $articles = Article::getByCategoryId($request->get('category_id'));
         }
 
-        return json_encode(['data' => $articles, 'status' => 200]);
+        return response()->json(['data' => $articles, 'status' => 200]);
     }
 
     /**
-     * @param int $userId
-     *
      * @return false|string
      */
-    public function showArticlesByUser(int $userId): bool|string
+    public function showArticlesByUser(): bool|string
     {
-        $articles = Article::where('created_by', $userId)->get()->toArray();
+        $user = auth()->userOrFail();
 
-        return json_encode(['data' => $articles, 'status' => 200]);
+        $articles = $user->articles;
+
+        return response()->json(['data' => $articles, 'status' => 200]);
     }
 
     /**
@@ -56,15 +57,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return json_encode(['message' => 'Not all arguments are provided']);
+            return response()->json(['message' => 'Not all arguments are provided']);
         }
 
         try {
             Article::addArticle($articleData);
 
-            return json_encode(['message' => 'success', 'status' => 200]);
-        } catch (\Exception $exception) {
-            return json_encode(['message' => $exception->getMessage(), 'status' => 500]);
+            return response()->json(['message' => 'success', 'status' => 200]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage(), 'status' => 500]);
         }
     }
 
@@ -85,15 +86,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return json_encode(['message' => 'Not all arguments are provided', 'status' => 500]);
+            return response()->json(['message' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
             Article::editArticle($articleId, $articleData);
 
-            return json_encode(['message' => 'success', 'status' => 200]);
-        } catch (\Exception $exception) {
-            return json_encode(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
+            return response()->json(['message' => 'success', 'status' => 200]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
         }
     }
 
@@ -112,15 +113,15 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return json_encode(['message' => 'Not all arguments are provided', 'status' => 500]);
+            return response()->json(['message' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
             Article::voteForArticle($voteData);
 
-            return json_encode(['message' => 'success', 'status' => 200]);
-        } catch (\Exception $exception) {
-            return json_encode(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
+            return response()->json(['message' => 'success', 'status' => 200]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
         }
     }
 
@@ -131,14 +132,16 @@ class ArticleController extends Controller
      */
     public function deleteArticle(int $articleId): string
     {
-        $article = Article::find($articleId);
+        $user = auth()->userOrFail();
+
+        $article = $user->articles->find($articleId);
 
         if ($article !== null) {
             $article->delete();
 
-            return json_encode(['message' => 'success', 'status' => 200]);
+            return response()->json(['message' => 'success', 'status' => 200]);
         }
 
-        return json_encode(['message' => 'article with provided id not found', 'status' => 404]);
+        return response()->json(['message' => 'article with provided id not found', 'status' => 404]);
     }
 }

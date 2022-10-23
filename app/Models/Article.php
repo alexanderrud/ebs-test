@@ -69,18 +69,17 @@ class Article extends Model
     /**
      * @param array $articleData
      *
-     * @return bool
+     * @return void
      */
-    public static function addArticle(array $articleData): bool
+    public static function addArticle(array $articleData): void
     {
         $article = new self();
 
         $article->category_id = $articleData['category_id'];
-        $article->created_by = $articleData['created_by'];
         $article->title = $articleData['title'];
         $article->description = $articleData['description'];
 
-        return $article->save();
+        auth()->user()->articles()->save($article);
     }
 
     /**

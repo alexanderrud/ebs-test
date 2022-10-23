@@ -21,13 +21,21 @@ Route::group([
 });
 
 /**
- * Routes for logged users
+ * Endpoints for logged users
  */
-Route::get('/articles/{userId}', [ArticleController::class, 'showArticlesByUser']);
-Route::post('/articles', [ArticleController::class, 'createArticle']);
-Route::put('/articles/{id}', [ArticleController::class, 'editArticle']);
-Route::put('/articles', [ArticleController::class, 'voteForArticle']);
-Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'me'
+], static function () {
+    Route::get('/articles', [ArticleController::class, 'showArticlesByUser']);
+    Route::post('/articles', [ArticleController::class, 'createArticle']);
+    Route::put('/articles/{id}', [ArticleController::class, 'editArticle']);
+    Route::put('/articles', [ArticleController::class, 'voteForArticle']);
+    Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
+});
 
+/**
+ * Endpoints for guests
+ */
 Route::get('/articles', [ArticleController::class, 'showArticles']);
 Route::get('/categories', [CategoryController::class, 'getTopCategories']);
