@@ -19,5 +19,13 @@ Route::group([
     Route::post('me', 'AuthController@me');
 });
 
+/**
+ * Routes for logged users
+ */
 Route::get('/articles', [ArticleController::class, 'showArticles']);
+Route::get('/articles/{userId}', [ArticleController::class, 'showArticlesByUser']);
+Route::post('/articles', [ArticleController::class, 'createArticle']);
+Route::put('/articles/{id}', [ArticleController::class, 'editArticle']);
+Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
+
 Route::get('/categories', [CategoryController::class, 'getTopCategories']);

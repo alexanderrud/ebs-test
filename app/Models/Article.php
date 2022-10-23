@@ -14,6 +14,8 @@ class Article extends Model
     protected $table = 'articles';
 
     protected $fillable = [
+        'category_id',
+        'created_by',
         'title',
         'description',
         'rating',
@@ -25,6 +27,14 @@ class Article extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -54,5 +64,45 @@ class Article extends Model
         $articles = Category::with('articles')->find($categoryId)->articles;
 
         return $articles->toArray();
+    }
+
+    /**
+     * @param array $articleData
+     *
+     * @return bool
+     */
+    public static function addArticle(array $articleData): bool
+    {
+        $article = new self();
+
+        $article->category_id = $articleData['category_id'];
+        $article->created_by = $articleData['created_by'];
+        $article->title = $articleData['title'];
+        $article->description = $articleData['description'];
+
+        return $article->save();
+    }
+
+    /**
+     * @param int $articleId
+     * @param array $articleData
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function editArticle(int $articleId, array $articleData): bool
+    {
+        $article = self::find($articleId);
+
+        if ($article === null) {
+            throw new \Exception('Article not found', 404);
+        }
+
+        $article->category_id = $articleData['category_id'];
+        $article->title = $articleData['title'];
+        $article->description = $articleData['description'];
+
+        return $article->save();
     }
 }
