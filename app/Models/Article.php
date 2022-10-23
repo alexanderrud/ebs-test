@@ -105,4 +105,32 @@ class Article extends Model
 
         return $article->save();
     }
+
+    /**
+     * @param array $voteData
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function voteForArticle(array $voteData): bool
+    {
+        $article = self::find($voteData['article_id']);
+
+        if ($article === null) {
+            throw new \Exception('Provided article not found', 404);
+        }
+
+        if ($voteData['vote'] === 'down') {
+            if ($article->rating === 0) {
+                throw new \Exception('Cannot decrease article that has 0 rating', 500);
+            }
+
+            $article->rating--;
+        } elseif ($voteData['vote'] === 'up') {
+            $article->rating++;
+        }
+
+        return $article->save();
+    }
 }

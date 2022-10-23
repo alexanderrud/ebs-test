@@ -85,11 +85,38 @@ class ArticleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return json_encode(['message' => 'Not all arguments are provided']);
+            return json_encode(['message' => 'Not all arguments are provided', 'status' => 500]);
         }
 
         try {
             Article::editArticle($articleId, $articleData);
+
+            return json_encode(['message' => 'success', 'status' => 200]);
+        } catch (\Exception $exception) {
+            return json_encode(['message' => $exception->getMessage(), 'status' => $exception->getCode()]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return bool|string
+     */
+    public function voteForArticle(Request $request): bool|string
+    {
+        $voteData = $request->all();
+
+        $validator = Validator::make($voteData, [
+            'article_id' => 'required',
+            'vote' => 'required|in:up,down'
+        ]);
+
+        if ($validator->fails()) {
+            return json_encode(['message' => 'Not all arguments are provided', 'status' => 500]);
+        }
+
+        try {
+            Article::voteForArticle($voteData);
 
             return json_encode(['message' => 'success', 'status' => 200]);
         } catch (\Exception $exception) {
