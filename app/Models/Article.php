@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 class Article extends Model
@@ -19,11 +20,19 @@ class Article extends Model
     ];
 
     /**
+     * @return BelongsTo
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
      * @param string $keyword
      *
      * @return array
      */
-    public static function showFilteredData(string $keyword): array
+    public static function getByKeyword(string $keyword): array
     {
         return DB::table('articles')
             ->join('categories', 'articles.category_id', '=', 'categories.id')
@@ -33,5 +42,17 @@ class Article extends Model
             ->orderBy('articles.created_at', 'DESC')
             ->get()
             ->toArray();
+    }
+
+    /**
+     * @param int $categoryId
+     *
+     * @return array
+     */
+    public static function getByCategoryId(int $categoryId): array
+    {
+        $articles = Category::with('articles')->find($categoryId)->articles;
+
+        return $articles->toArray();
     }
 }

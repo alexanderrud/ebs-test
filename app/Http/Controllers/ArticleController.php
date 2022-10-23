@@ -14,10 +14,16 @@ class ArticleController extends Controller
      */
     public function showArticles(Request $request): bool|string
     {
-        $keyword = $request->get('keyword');
+        $articles = [];
 
-        $articles = $keyword === null ? Article::all()->toArray() : Article::showFilteredData($keyword);
+        if ($request->has('keyword')) {
+            $articles = Article::getByKeyword($request->get('keyword'));
+        }
 
-        return json_encode($articles);
+        if ($request->has('category_id')) {
+            $articles = Article::getByCategoryId($request->get('category_id'));
+        }
+
+        return json_encode(['data' => $articles, 'status' => 200]);
     }
 }
