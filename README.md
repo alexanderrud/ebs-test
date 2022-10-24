@@ -12,18 +12,21 @@
 `cp .env.example .env`
 
 ### Step 3
+##### Change values of environment variables stored in .env file to values stored in environment section of db service (docker-compose.yml file) 
+
+### Step 4
 ##### Run docker containers with necessary environment:
 `docker-compose up --build`
 
-### Step 4
+### Step 5
 #### You should generate your own jwt secret token:
 `docker exec -it php-fpm php artisan jwt:secret`
 
-### Step 5
+### Step 6
 #### Run migrations:
 `docker exec -it php-fpm php artisan migrate`
 
-### Step 6
+### Step 7
 ##### Inside docker container php-fpm run seeds:
 `docker exec -it php-fpm php artisan db:seed`
 
